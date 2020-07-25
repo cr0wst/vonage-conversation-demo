@@ -57,6 +57,39 @@ fun tearDown() {
 }
 ```
 
-## Run the Application
+## Pre-Setup
 
-Todo
+If you don't already have a Vonage account you can [Sign-Up](https://dashboard.nexmo.com/sign-up) and receive some free credit. You'll need to know your API Key and Secret.
+
+You also need to create a [Vonage Application](https://developer.nexmo.com/application/overview). This can be done either via the [Vonage Dashboard](https://dashboard.nexmo.com/applications/new) or the [Vonage CLI](https://developer.nexmo.com/application/nexmo-cli)
+
+This is an example of the application that I have created. I also opted to have Vonage generate the public and private key. You will need the path of the private key later.
+
+![](create-application.png)
+
+Also, enable the RTC capability and define your event url. You'll need to expose your application to the internet via something like [ngrok](https://ngrok.com).
+
+There is an event webhook controller listening on `{baseUrl}/webhook/events`:
+
+![](capability.png)
+
+You will use this application's ID in the setup.
+
+## Setup
+
+Define the following in `src/main/resources/application.properties`:
+
+```properties
+nexmo.creds.api-key=your-api-key
+nexmo.creds.secret=your-secret
+nexmo.creds.private-key-paty=/path/to/your/private.key
+nexmo.creds.application-id=your-application-id
+```
+
+## Start the Application
+
+The following command can be used to start the application:
+
+```sh
+./mvnw spring-boot:run
+```
