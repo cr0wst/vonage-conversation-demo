@@ -9,5 +9,4 @@ class NexmoConversationDemoApplicationTests {
     @Test
     fun contextLoads() {
     }
-
 }
