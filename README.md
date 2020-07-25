@@ -93,3 +93,16 @@ The following command can be used to start the application:
 ```sh
 ./mvnw spring-boot:run
 ```
+
+## Running from Docker
+
+You can also run the application using the image on [Docker Hub](https://hub.docker.com/r/cr0wst/vonage-conversation-demo). You'll need to define the environment variables accordingly:
+
+```sh
+ docker run --rm -it -p 8080:8080 \ 
+    -e nexmo.creds.api-key=your-api-key \
+    -e nexmo.creds.secret=your-secret \
+    -e nexmo.creds.private-key-contents="$(cat /path/to/your/private.key)" \
+    -e nexmo.creds.application-id=your-application-id \
+    cr0wst/vonage-conversation-demo
+```
