@@ -22,37 +22,42 @@ class AutomaticConversation(
     private val membershipService: MembershipService,
     private val eventService: EventService
 ) {
-    private var conversation: Conversation? = null
+    private var conversations: MutableList<Conversation> = mutableListOf()
     private val users: MutableList<User> = mutableListOf()
-    private val memberships: MutableList<Member> = mutableListOf()
+    private val memberships: MutableMap<String, MutableList<Member>> = mutableMapOf()
 
     @EventListener
     fun setup(contextRefreshedEvent: ContextRefreshedEvent) {
-        log.info("Creating new Conversation")
-        conversation = conversationService.createConversation()
-        log.info("Created: $conversation")
+        repeat(3) {
+            log.info("Creating new Conversation")
+            val conversation = conversationService.createConversation()
+            conversations.add(conversation)
+            log.info("Created: $conversation")
+            memberships.put(conversation.id, mutableListOf())
 
-        repeat(5) {
-            log.info("Creating new User")
-            val user = userService.createUser()
-            users.add(user)
-            log.info("Created: $user")
+            repeat(3) {
+                log.info("Creating new User")
+                val user = userService.createUser()
+                users.add(user)
+                log.info("Created: $user")
 
-            log.info("Adding ${user.id} to ${conversation?.id}")
-            val membership = membershipService.createMembership(user, conversation!!)
-            memberships.add(membership)
+                log.info("Adding ${user.id} to ${conversation?.id}")
+                val membership = membershipService.createMembership(user, conversation!!)
+                memberships.get(conversation.id)?.add(membership)
+            }
         }
     }
 
     @Scheduled(fixedDelay = 5000)
     fun haveConversation() {
         try {
-            if (conversation != null && memberships.isNotEmpty()) {
-                val member = memberships.random()
-                eventService.sendMessage(conversation!!, member)
-                log.info("Sent message from ${member.id} to ${conversation!!.id}")
-            }
+            val conversation = conversations.random()
+            val members = memberships[conversation.id]
+            val member = members?.random()!!
+            eventService.sendMessage(conversation, member)
+            log.info("Sent message from ${member.id} to ${conversation!!.id}")
         } catch (e: Exception) {
+            log.error("Error", e)
             // Ignore any exceptions, sometimes a race condition happens or we send too fast for Nexmo.
         }
     }
@@ -60,7 +65,9 @@ class AutomaticConversation(
     @PreDestroy
     fun tearDown() {
         log.info("Deleting all Conversations")
-        conversationService.deleteConversation(conversation!!)
+        conversations.forEach {
+            conversationService.deleteConversation(it)
+        }
         log.info("Deleting all users")
         userService.deleteUsers(users)
     }
