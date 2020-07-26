@@ -25,6 +25,6 @@ class EventService(
         .block()!!
 
     data class EventPostBody(val type: String = "text", val from: String, val body: Body = Body()) {
-        data class Body(val text: String = LoremIpsum.getInstance().getParagraphs(0, 3))
+        data class Body(val text: String = LoremIpsum.getInstance().getParagraphs(1, 2))
     }
 }
