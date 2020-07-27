@@ -99,7 +99,7 @@ The following command can be used to start the application:
 You can also run the application using the image on [Docker Hub](https://hub.docker.com/r/cr0wst/vonage-conversation-demo). You'll need to define the environment variables accordingly:
 
 ```sh
- docker run --rm -it -p 8080:8080 \ 
+ docker run --rm -it \ 
     -e nexmo.creds.api-key=your-api-key \
     -e nexmo.creds.secret=your-secret \
     -e nexmo.creds.private-key-contents="$(cat /path/to/your/private.key)" \
